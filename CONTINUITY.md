@@ -108,6 +108,21 @@ If there are local tracked changes, inspect before pulling. Expected test discov
 
 **Next action:** Ask the user to authorize one live, foreground, time-bounded v1 acceptance test with a single harmless fixed-file operation. After authorization, instruct the user to run `py -3 bridge_listener.py --listen --max-minutes 10 --poll-seconds 15` from their existing checkout, then wait for its exact `listener_ready` stdout before adding one fresh short-lived job to the PRIVATE queue. The listener ignores all jobs present at startup and exits after one completed operation or timeout; it does not install as a Windows service or run at login. Verify the receipt on GitHub, request a direct Windows file hash comparison, and update this file. If `listener_ready` has not been observed, do not publish a job. If more than ten minutes have elapsed, restart only with the user's approval and a fresh task, not a replay. No merge to `main` without authorization.
 
+## Live v1 acceptance test authorization and preflight (2026-10-30, Europe/Madrid)
+
+**The user has now explicitly authorized exactly ONE controlled LIVE v1 foreground listening test**, following `docs/ADR-0001-BOUNDED_LISTENER.md`. Conditions: user manually launches listener for at most 10 minutes, assistant waits for user-confirmed exact `listener_ready` before enqueuing ONE fresh harmless fixed-file task to the PRIVATE control repo, then fetches receipt and verifies SHA-256; no Windows services, generalized command execution, AB repository edits or merges to public `main`.
+
+**Preflight verified by connected GitHub tools:** current feature branch `feat/v1-bounded-listener` HEAD `41932d16a249c01c247aa8b2fb3bb919352d2a08`; `bridge_listener.py` contains a readiness print after its initial queue snapshot and a 10-minute maximum lifetime; private control repo `GalexY3/gpt-chat-local-bridge-control` remains private on `main`. The private `jobs/pending` directory contains ONLY the previously completed `pilot-20261030-2209.json`; `jobs/receipts` contains its receipt. Thus the fresh v1 job must use a new identifier, and the listener should ignore the historical job via its initial snapshot.
+
+**At this checkpoint, NO v1 listener start has been confirmed and NO v1 job has been enqueued.** The next assistant response must give the user this PowerShell command on the already checked-out feature branch:
+
+```powershell
+cd $HOME\gpt-chat-local-bridge
+py -3 bridge_listener.py --listen --max-minutes 10 --poll-seconds 15
+```
+
+User must report seeing the exact stdout `listener_ready` while the window remains running. **Do not create a job just because the command was recommended.** Only after the user confirms `listener_ready` and the session is still inside its time window should the assistant obtain the target-local current time, select a fresh short-lived `job_id`, and enqueue the strict v0 JSON job with `write_fixed_test_file`, `isolated-pilot`, empty parameters and an expiry within 15 minutes (preferably within the remaining listener window). After execution, independently inspect `jobs/receipts/<job_id>.json`, verify expected SHA-256 against the exact fixed bytes, and ask the user to check the physical per-job output. If the process has timed out, been stopped, or errored, do not enqueue; inspect and coordinate a fresh explicit start instead. The live test authorizes a single job only, not a permanent agent.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
