@@ -1,6 +1,6 @@
 # Windows worker v1 — bounded foreground listener (development only)
 
-**Status: code and adversarial tests drafted. Not installed, not run on the user's Windows, and not authorized for live queue execution.**
+**Status (2026-10-30):** The user ran 55/55 original v1 offline tests successfully on Windows. A live, foreground, user-authorized listener was started and reported `listener_ready`; the subsequent attempted chat-side GitHub job creation was blocked by connection security controls, and no new job or receipt was observed. The user confirmed stopping the listener. Therefore the **v1 live end-to-end acceptance test is incomplete**. Ten additional mock transport tests are drafted but have not yet been run.
 
 ## Version separation
 
@@ -11,23 +11,22 @@
 
 ## Review + offline tests (not permission to dispatch live jobs)
 
-The user already has the public repo cloned on Windows and is currently on `feat/pilot-schema-v0`. Once this branch is ready for user review, in ordinary PowerShell:
+The user already has the public repo cloned on Windows and is on `feat/v1-bounded-listener`. For the newly added offline transport tests, use ordinary PowerShell:
 
 ```powershell
 cd $HOME\gpt-chat-local-bridge
 git status --short
-git fetch origin
-git switch --track origin/feat/v1-bounded-listener
+git pull --ff-only
 py -3 -m unittest discover -s tests -v
 ```
 
 If the branch exists locally, use `git switch feat/v1-bounded-listener` then `git pull --ff-only`; do not delete or overwrite local changes. No `pip` or `uv` install is required for these standard-library unit tests.
 
-**STOP after tests.** Do not launch the listener, submit tasks to the control repo, create scheduled jobs, or enable background start-up until a separate user authorization after successful Windows test output.
+**STOP after tests.** The preceding live attempt was closed by the user. Do not restart the listener, submit tasks to the control repo, create scheduled jobs, or enable background startup while the chat-side dispatch action remains blocked.
 
 ## Planned foreground run (separate future authorization gate)
 
-Only once the user approves the live test:
+A previous user-authorized live attempt ended without dispatch. **The following is illustrative only, not an instruction to restart:**
 
 ```powershell
 py -3 bridge_listener.py --listen --max-minutes 10 --poll-seconds 15
@@ -55,14 +54,20 @@ No Windows service, startup task or background process is installed. `Ctrl+C` st
 
 ## Windows adversarial-test coverage
 
-The first user-reported v1 suite discovered 54 tests: 53 passed and 1 was skipped because the local Windows account could not create a real symbolic link. This is not equivalent to 54 passes. The subsequent source revision replaced that privilege-dependent test with deterministic simulation of a symlink metadata response, and added an analogous simulated Windows junction check. **There are now 55 test methods in source; this revised suite has not yet been run on Windows.**
+The first user-reported v1 suite discovered 54 tests: 53 passed and 1 was skipped because the local Windows account could not create a real symbolic link. This is not equivalent to 54 passes. The subsequent source revision replaced that privilege-dependent test with deterministic simulation of a symlink metadata response, and added an analogous simulated Windows junction check. The 55-test suite subsequently ran on Windows with **55 passes, 0 skips, 0 failures**. Ten separate mock GitHub CLI transport test methods have since been added, bringing the source total to **65**, not yet rerun on Windows.
 
 The simulated tests exercise the worker's refusal path without requiring administrator or Developer Mode permissions. They do **not** independently validate real Windows filesystem reparse-point behavior under all circumstances. Any later genuine filesystem integration test must use a disposable workspace, be separately reviewed, and never require elevated privileges to pass the basic unit test suite.
+
+## Current connector boundary
+
+Read [ADR-0002](ADR-0002-DISPATCH-BOUNDARY.md) before any further live workflow. The attempted connected GitHub creation of a new queue item returned a host security block. A subsequent fetch of the proposed pending job and receipt returned 404. This is **not evidence of a Windows worker error**. The reason for the host decision cannot be independently verified here.
+
+The mock transport tests in `tests/test_transport_offline.py` do not contact GitHub and do not cure the blocked chat-side write permission. Do not switch to alternate paths, browser automation, another connector or manual credential submission as a workaround for that block.
 
 ## Review gates before claiming v1 complete
 
 - Full offline tests passed on Windows, with actual output and Python version recorded.
-- Explicit live-test authorization from the user.
+- A new explicitly supported and authorized chat-side dispatch path; the previous connected GitHub job creation was blocked.
 - One newly queued private test job **after** `listener_ready`.
 - A single completed output in a job-specific directory, receipt with matching hashes, and clean listener exit.
 - No changes to the public `main` branch, scientific repositories, or private job queue until authorized.
