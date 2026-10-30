@@ -241,6 +241,9 @@ class ListenerTests(unittest.TestCase):
 
     def test_permission_error_leaves_reservation_without_execution(self):
         queue = FakeQueue()
+        # Prepare the root first: fail specifically when creating the per-job
+        # output directory, i.e. after the durable reservation is written.
+        (self.root / "outputs").mkdir()
         with patch("bridge_listener.Path.mkdir", side_effect=PermissionError("test")):
             with self.assertRaisesRegex(WorkerError, "local_output_failed_reserved"):
                 execute_fixed_job(self.root, "new-001", queue.raw, queue, now=NOW)
