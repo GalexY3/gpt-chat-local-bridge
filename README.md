@@ -1,6 +1,6 @@
 # GPT Chat Local Bridge
 
-> **Status: design / pre-alpha. No local executor has been installed or tested.**
+**Continue across new ChatGPT chats:** read [START_HERE.md](START_HERE.md), [CONTINUITY.md](CONTINUITY.md), and [AGENTS.md](AGENTS.md). The continuity file records verified progress and the next action.\n\n> **Status: design / pre-alpha. No local executor has been installed or tested.**
 
 An experimental, community-oriented bridge for dispatching **explicitly authorized** tasks from a conversational AI client to a local computer and returning auditable results.
 
