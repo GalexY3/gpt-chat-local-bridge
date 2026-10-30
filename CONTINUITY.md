@@ -19,9 +19,9 @@ Both repositories have been accessible through the GitHub connection. The privat
 - docs/PILOT_PROTOCOL.md on main, commit 6938a5b5cdd07d1b5b83911e0b9841f0e51c47ef.
 - Private control README updated, commit e6f0891c493797a9951651bf641d69346746894c.
 - Permanent restart mechanism established on public main (2026-10-30): `CONTINUITY.md`, `AGENTS.md`, `START_HERE.md`, plus a README link. `AGENTS.md` documents the convention that every future substantive project exchange should update this canonical file after verifying the latest GitHub SHA. Known commits: continuity creation `4eb47b821c18ca7c9a7a882382cf7a6aa9fa65ea`; AGENTS `549450077056e44159db2f00443758fc228b2709`; START_HERE `fb52c1c500019122d4425a70db8c7aff3e904fbe`; README link `c9a0acafaac688e0322816407672db916bb89c39`.
-- Public feature branch feat/pilot-schema-v0 includes bridge_protocol.py, tests/test_bridge_protocol.py and docs/WINDOWS_PREREQUISITES.md. Feature branch HEAD observed 2026-10-30: b144727fe02ff6de9951d5df8ec14037c2dc04a6. Verify live HEAD before editing.
+- Public feature branch feat/pilot-schema-v0 includes bridge_protocol.py, tests/test_bridge_protocol.py and docs/WINDOWS_PREREQUISITES.md. Feature branch HEAD observed 2026-10-30 after cache ignore addition: bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34. Verify live HEAD before editing.
 
-The user reports cloning the public repository, switching to the feature branch and running the original 11 protocol tests with Python 3.14.3: **11/11 PASS, 0.004 s** (PowerShell transcript provided in the conversation). This is a user-observed Windows result, not an execution performed by the ChatGPT tool. Subsequently, the assistant added `bridge_worker.py` (opt-in, one-shot fixed-file worker), `tests/test_bridge_worker.py` (nine more offline tests) and `docs/WORKER_V0.md` to the same feature branch, latest HEAD above. **The new worker and its nine tests have not yet been run on Windows or independently verified. No job has been dispatched, no worker installed or started, and no actual Chat → PC → Chat execution has occurred.**
+**Windows testing observed through user-provided PowerShell transcripts:** initial 11 protocol tests passed (11/11, 0.004 s); subsequently the user pulled the one-shot worker and reports **20/20 tests PASS, 0.052 s** with Python 3.14.3. `git pull --ff-only` fast-forwarded the feature branch from d501807 to b144727. Their `git status --short` showed only untracked Python cache directories (`__pycache__/`, `tests/__pycache__/`). This is a **user-reported Windows execution**, not code remotely executed by this assistant. After that report, `.gitignore` was added on the feature branch to ignore those caches, commit bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34. **No worker workspace initialization, no private queue dispatch, no remote receipt and no Chat → PC → Chat end-to-end test has occurred.**
 
 ## User-reported Windows diagnostics
 
@@ -43,16 +43,17 @@ The user reports cloning the public repository, switching to the feature branch 
 
 ## Next action
 
-The user already cloned the public repo in their Windows home folder and is on `feat/pilot-schema-v0`. **Do not clone again.** First inspect the current local checkout and update the feature branch, then execute the expanded offline test suite:
+The user already cloned the public repo in their Windows home folder and is on `feat/pilot-schema-v0`. **Do not clone again.** As of this checkpoint **20/20 offline tests have been user-reported as passing.** Now update the feature branch to collect the harmless Python cache ignore and **explicitly initialize the isolated workspace**:
 
 ```powershell
 cd $HOME\gpt-chat-local-bridge
-git status --short
 git pull --ff-only
-py -3 -m unittest discover -s tests -v
+py -3 bridge_worker.py --init
 ```
 
-Expected test discovery is 20 methods (11 original + 9 new). **Do not report PASS until user returns actual output.** If `git status --short` shows local changes, stop and inspect before pulling. If tests pass and the user approves the next gate, initialize the fixed disposable workspace with `py -3 bridge_worker.py --init`. That command creates one dedicated folder locally and contacts no network endpoint. Only **after** test review and local initialization should Chat enqueue a fresh, 15-minute, explicitly authorized fixed-file job in the private control repository, followed by the user's one-shot `py -3 bridge_worker.py --run-id JOB_ID`. The v0 worker is manual, not a background agent, and only uploads a receipt after completing its predefined operation.
+The expected stdout on successful initialization is `pilot_workspace_initialized`. The command creates exactly one dedicated `gpt-chat-local-bridge-pilot` folder under the Windows home with a marker and state subfolder. It performs no network requests or remote jobs. If it reports `workspace_already_exists` or another error, do not delete or overwrite anything; inspect the state first. The worker is **one-shot only**, never a background service.
+
+**After user reports local initialization success:** Chat should generate a fresh safe job ID and expiry strictly within the next 15 min, create a v0 JSON job at `jobs/pending/<id>.json` in the PRIVATE control repo using the GitHub connector; verify exact JSON and confirm it is still within TTL. Only then ask the user to run `py -3 bridge_worker.py --run-id <id>` from the project checkout while job is valid. The worker creates a fixed benign file and posts a minimal receipt; Chat must independently fetch and inspect `jobs/receipts/<id>.json` and compare the SHA-256 with known bytes. Do not claim success merely from a queued task or stdout. Do not write any job until local initialization is user-confirmed, and never disclose GitHub credentials.
 
 ## New-chat recovery prompt
 
