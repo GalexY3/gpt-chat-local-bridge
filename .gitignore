@@ -1,0 +1,17 @@
+# Python bytecode and local development state
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+.coverage
+htmlcov/
+
+# Local test artifacts and credentials should never be versioned
+.env
+.env.*
+!.env.example
+*.log
+gpt-chat-local-bridge-pilot/
