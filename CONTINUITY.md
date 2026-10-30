@@ -43,26 +43,21 @@ Both repositories have been accessible through the GitHub connection. The privat
 
 ## Latest verified checkpoint (2026-10-30, Europe/Madrid)
 
-**FIRST REAL END-TO-END PILOT SUCCEEDED** (with the limitation that the local file has not yet been independently read back from Windows).
+**FIRST REAL END-TO-END PILOT SUCCEEDED, INCLUDING USER-SIDE PHYSICAL FILE VERIFICATION.** This is a verified manual single-shot round trip, not an unattended agent or an independent remote forensic inspection of Windows.
 
 1. User-provided PowerShell confirms the checkout was fast-forwarded to feature commit `bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34`, 20/20 unit tests passed in 0.052s, and `py -3 bridge_worker.py --init` printed `pilot_workspace_initialized`.
 2. ChatGPT's GitHub connector created a task in the **private** control repo: `jobs/pending/pilot-20261030-2209.json`, commit `80e821c1e27d629f66a38eac952f60e89f4209e5`; task expiry `2026-10-30T21:22:00Z` and only permitted operation `write_fixed_test_file`.
 3. User-provided PowerShell confirms explicit execution `py -3 bridge_worker.py --run-id pilot-20261030-2209` and output `{"job_id":"pilot-20261030-2209","output_sha256":"b0cba8c8a2710c8a32599b3088a34260493eb773d7ccc4cb0e87c5f9f7f6ac73","receipt_uploaded":true}`.
 4. ChatGPT **independently fetched** `jobs/receipts/pilot-20261030-2209.json` from the private control repo, blob SHA `8acc7e9e44baa0bef35bd75db23bbdfe3c2c8e89`. It contains `status=succeeded`, `completed_at=2026-10-30T21:09:39Z`, `output_file=chat_local_bridge_pilot.txt`, `output_sha256=b0cba8c8a2710c8a32599b3088a34260493eb773d7ccc4cb0e87c5f9f7f6ac73`, `job_sha256=f9ac0450236464140458ae093d1976a6055d297f1de782a9accaf6ca576b5c11`.
-5. ChatGPT independently computed SHA-256 from the *exact submitted UTF-8 job JSON bytes* and from `b"GPT Chat Local Bridge pilot v0\n"`; **both match the corresponding hashes in the receipt**. The receipt completion time precedes expiry. The physical local file's hash has not yet been separately read directly from Windows; the file-write claim is supported by user stdout and the worker-generated remote receipt. Do not describe that as a fully independent forensic audit.
+5. ChatGPT independently computed SHA-256 from the *exact submitted UTF-8 job JSON bytes* and from `b"GPT Chat Local Bridge pilot v0\n"`; **both match the corresponding hashes in the receipt**. The receipt completion time precedes expiry. The physical local file's hash was subsequently checked directly in Windows, as recorded below. The evidence consists of user-provided PowerShell output plus a GitHub receipt retrieved separately; this is not independent remote forensic inspection of Windows.
+
+**Additional physical-file verification (user-reported Windows PowerShell):** `Test-Path (Join-Path $HOME "gpt-chat-local-bridge-pilot\\chat_local_bridge_pilot.txt")` returned `True`. `Get-FileHash (...)-Algorithm SHA256` returned `B0CBA8C8A2710C8A32599B3088A34260493EB773D7CCC4CB0E87C5F9F7F6AC73`, exactly matching the SHA-256 in the independently retrieved GitHub receipt. This closes the manual pilot acceptance criteria. **Do not rerun the consumed job:** the durable reservation and exclusive output are intentional.
+
+**Next-stage design was documented, but not implemented:** `docs/ADR-0001-BOUNDED_LISTENER.md` was created on public feature branch `feat/pilot-schema-v0`, commit `4dd776047081f6c40c90c29f88cba0ef6c89673c`. It proposes foreground opt-in polling with an explicit maximum lifetime, one job per session, strict allowlists, per-job isolated outputs, idempotency, redacted receipts, offline tests, and manual kill-switch. No daemon, Windows service, scheduled task, broad shell access, GUI control, or background automation has been enabled. The design is **proposed, not yet user-reviewed or authorized for execution**.
 
 **Capability achieved:** Manual, single-shot ChatGPT Chat → GitHub private job → Windows worker → private GitHub receipt → ChatGPT Chat. The system does **not** yet run continuously, poll autonomously, execute arbitrary code, operate Windows GUI, or support general scientific projects.
 
-**Next action: independently check the physical file from the user's ordinary PowerShell** (not admin):
-
-```powershell
-Test-Path (Join-Path $HOME "gpt-chat-local-bridge-pilot\chat_local_bridge_pilot.txt")
-Get-FileHash (Join-Path $HOME "gpt-chat-local-bridge-pilot\chat_local_bridge_pilot.txt") -Algorithm SHA256 | Select-Object Hash
-```
-
-Expected path check: `True`; expected hash `B0CBA8C8A2710C8A32599B3088A34260493EB773D7CCC4CB0E87C5F9F7F6AC73`. Do not re-run the same job; the worker deliberately prevents duplicates.
-
-After this check: decide the next narrowly scoped engineering improvement, beginning with **worker lifecycle / queue polling and security hardening**, offline tests and review before enabling any background execution. Avoid a generic remote shell, GUI automation, or open-ended code execution until separate permission gates and tests exist. Keep the public feature branch separate from `main` until reviewed and explicitly authorized.
+**Next action:** Review the proposed bounded-listener design in `docs/ADR-0001-BOUNDED_LISTENER.md` on feature branch, and—if the user wishes to continue—implement it on a feature branch, with offline unit tests and no live unattended execution before the user has reviewed the updated protocol and tests. Address the present v0 limitation that a second job cannot reuse the one existing fixed output. Update and run tests on Windows before any new private dispatch. Do not automatically merge to `main`. The user has not yet explicitly approved a continuously running service or generalized execution on their PC.
 
 ## New-chat recovery prompt
 
