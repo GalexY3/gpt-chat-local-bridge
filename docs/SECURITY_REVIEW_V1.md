@@ -14,9 +14,10 @@ This is an engineering review of the prototype's code and observed records, **no
 | Bounded listener logic and simulated queue | 32 offline unit tests in v1, user-run Windows result | **Passed**, simulated transport |
 | v0 worker regression | 9 offline unit tests in v1, user-run Windows result | **Passed** |
 | Total tests before transport hardening | 55 tests in 0.182 seconds, no failures/skips, user PowerShell output | **Passed** |
+| **Complete expanded offline suite** | **65 tests in 0.147 seconds**, zero failures and skips, user PowerShell output | **Passed locally; NOT a live v1 dispatch** |
 | Foreground listener ready state | User reported `listener_ready`; later confirmed worker stopped | **Observed**, not an executed job |
 | New chat-side v1 queue write | Connected action explicitly blocked; target and receipt absent on subsequent GitHub reads | **Blocked** |
-| New GitHub CLI mock transport tests | 10 methods in `tests/test_transport_offline.py` | **Written, unrun** |
+| New GitHub CLI mock transport tests | 10 methods in `tests/test_transport_offline.py`; user PowerShell transcript 2026-10-30 | **Passed locally (10/10, mocked transport)** |
 | General/privileged/GUI workloads | No design/permission/implementation | **Out of scope** |
 
 ## Adversarial model and controls
@@ -38,7 +39,7 @@ This is an engineering review of the prototype's code and observed records, **no
 
 **P0 — Trust boundary:** Obtain a supported and explicitly authorized chat-side capability for queuing the fixed-format job, without bypassing a security rejection. Until then, no claim of v1 live end-to-end operation is warranted. This is not necessarily solvable by changes to the Windows worker.
 
-**P1 — Offline transport confidence:** Have the user run the expanded 65-test suite from the active v1 branch; log exact pass/fail/skip outcome. The ten new tests intercept subprocess invocations so no `gh api` call is actually sent.
+**P1 — Offline transport confidence (COMPLETE for present scope):** The user ran the expanded 65-test suite on Windows: all 65 passed, no failures/skips. The ten new tests intercept subprocess invocations, so no live `gh api` request is performed. This does **not** validate the host-side ChatGPT dispatch action, which remains blocked.
 
 **P2 — Reliability before broadening operations:** Design explicit lifecycle and recovery state (`reserved`, `written`, `receipt_queued`, `acknowledged`), redact and bound logs, make queue retention deliberate, and plan an end-to-end test for real Windows junctions without assuming elevation.
 
