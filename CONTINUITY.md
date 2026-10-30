@@ -18,6 +18,7 @@ Both repositories have been accessible through the GitHub connection. The privat
 - Public README created on main, commit 4850d85e65df7c60309b7cd492245d7925a5bb5c.
 - docs/PILOT_PROTOCOL.md on main, commit 6938a5b5cdd07d1b5b83911e0b9841f0e51c47ef.
 - Private control README updated, commit e6f0891c493797a9951651bf641d69346746894c.
+- Permanent restart mechanism established on public main (2026-10-30): `CONTINUITY.md`, `AGENTS.md`, `START_HERE.md`, plus a README link. `AGENTS.md` documents the convention that every future substantive project exchange should update this canonical file after verifying the latest GitHub SHA. Known commits: continuity creation `4eb47b821c18ca7c9a7a882382cf7a6aa9fa65ea`; AGENTS `549450077056e44159db2f00443758fc228b2709`; START_HERE `fb52c1c500019122d4425a70db8c7aff3e904fbe`; README link `c9a0acafaac688e0322816407672db916bb89c39`.
 - Public feature branch feat/pilot-schema-v0 includes bridge_protocol.py, tests/test_bridge_protocol.py and docs/WINDOWS_PREREQUISITES.md. Latest known feature commit: d501807a01707fba562f4293df4c52e1a15aa4d3. Verify live branch HEAD before editing.
 
 The protocol validator has been written but its tests have not yet been executed by the user. No Windows worker or GUI automation has been installed or tested.
