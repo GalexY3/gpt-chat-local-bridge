@@ -4,7 +4,7 @@ Updated: 2026-10-30. This document is the public, persistent project handoff.
 
 ## Purpose
 
-Build an experimental bridge from ordinary ChatGPT Chat to a user-installed Windows worker. GitHub is the message transport. A connected GitHub repository does not give ChatGPT direct access to local applications or files. The worker is not installed yet. The project aims to support scientific workflows across independent projects, without changing their repositories during the pilot.
+Build an experimental bridge from ordinary ChatGPT Chat to a user-installed Windows worker. GitHub is the message transport. A connected GitHub repository does not give ChatGPT direct access to local applications or files. The original v0 worker was initialized and executed manually on Windows; the v1 bounded listener is not yet validated or activated there. The project aims to support scientific workflows across independent projects, without changing their repositories during the pilot.
 
 ## Repositories
 
@@ -57,7 +57,7 @@ Both repositories have been accessible through the GitHub connection. The privat
 
 **Capability achieved:** Manual, single-shot ChatGPT Chat → GitHub private job → Windows worker → private GitHub receipt → ChatGPT Chat. The system does **not** yet run continuously, poll autonomously, execute arbitrary code, operate Windows GUI, or support general scientific projects.
 
-**Next action:** Review the proposed bounded-listener design in `docs/ADR-0001-BOUNDED_LISTENER.md` on feature branch, and—if the user wishes to continue—implement it on a feature branch, with offline unit tests and no live unattended execution before the user has reviewed the updated protocol and tests. Address the present v0 limitation that a second job cannot reuse the one existing fixed output. Update and run tests on Windows before any new private dispatch. Do not automatically merge to `main`. The user has not yet explicitly approved a continuously running service or generalized execution on their PC.
+**Historical next action (v1 design now implemented on a feature branch):** Review the proposed bounded-listener design in `docs/ADR-0001-BOUNDED_LISTENER.md` on feature branch, and—if the user wishes to continue—implement it on a feature branch, with offline unit tests and no live unattended execution before the user has reviewed the updated protocol and tests. Address the present v0 limitation that a second job cannot reuse the one existing fixed output. Update and run tests on Windows before any new private dispatch. Do not automatically merge to `main`. The user has not yet explicitly approved a continuously running service or generalized execution on their PC.
 
 ## Development checkpoint: v1 bounded listener (2026-10-30)
 
