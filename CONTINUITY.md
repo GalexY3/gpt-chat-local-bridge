@@ -41,23 +41,21 @@ Both repositories have been accessible through the GitHub connection. The privat
 - No auto-merges to main and no license chosen yet.
 - A submitted job is not proof of execution. Require an observed local action plus a return receipt and hash.
 
-## Latest conversational checkpoint (2026-10-30)
+## Latest conversational checkpoint (2026-10-30, Europe/Madrid)
 
-User pasted a PowerShell log showing `git pull` to feature HEAD `b144727` and the same 20/20 offline tests passing in 0.052 s. **No invocation or output of `py -3 bridge_worker.py --init` appears in this log.** Therefore local workspace initialization remains UNVERIFIED and no GitHub job has been queued or executed. The next reply should ask only for `git pull --ff-only` to retrieve `.gitignore` at later commit `bbc9ca5`, then `py -3 bridge_worker.py --init` (in the existing project directory). Treat any failure non-destructively and inspect before proceeding. Do not claim a new test run beyond user-shared output.
+**Local initialization is user-reported complete.** The user's latest PowerShell transcript shows `git pull --ff-only` fast-forward to feature commit `bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34` (adds Python-cache `.gitignore`), followed by `py -3 bridge_worker.py --init` with exact stdout `pilot_workspace_initialized`. Earlier 20/20 offline tests passed, 0.052 s. These are user-shared PowerShell outputs, not local execution by ChatGPT.
+
+**First real remote job QUEUED (not executed or completed).** Verified via connected GitHub read-back in the PRIVATE control repo: `jobs/pending/pilot-20261030-2209.json`, commit `80e821c1e27d629f66a38eac952f60e89f4209e5`, file SHA `66b2500fa006dc858c08e58343f0213dabe0273e`. Fields: `schema_version=0`, `job_id=pilot-20261030-2209`, `operation=write_fixed_test_file`, `workspace_profile=isolated-pilot`, `parameters={}`, `expires_at=2026-10-30T21:22:00Z` (22:22 Europe/Madrid). Job was created only after user confirmed local initialization. **No Windows execution or receipt has yet been observed.**
 
 ## Next action
 
-The user already cloned the public repo in their Windows home folder and is on `feat/pilot-schema-v0`. **Do not clone again.** As of this checkpoint **20/20 offline tests have been user-reported as passing.** Now update the feature branch to collect the harmless Python cache ignore and **explicitly initialize the isolated workspace**:
+The user was instructed to run the following in their already-initialized checkout **before 2026-10-30 22:22 Europe/Madrid**:
 
 ```powershell
-cd $HOME\gpt-chat-local-bridge
-git pull --ff-only
-py -3 bridge_worker.py --init
+py -3 bridge_worker.py --run-id pilot-20261030-2209
 ```
 
-The expected stdout on successful initialization is `pilot_workspace_initialized`. The command creates exactly one dedicated `gpt-chat-local-bridge-pilot` folder under the Windows home with a marker and state subfolder. It performs no network requests or remote jobs. If it reports `workspace_already_exists` or another error, do not delete or overwrite anything; inspect the state first. The worker is **one-shot only**, never a background service.
-
-**After user reports local initialization success:** Chat should generate a fresh safe job ID and expiry strictly within the next 15 min, create a v0 JSON job at `jobs/pending/<id>.json` in the PRIVATE control repo using the GitHub connector; verify exact JSON and confirm it is still within TTL. Only then ask the user to run `py -3 bridge_worker.py --run-id <id>` from the project checkout while job is valid. The worker creates a fixed benign file and posts a minimal receipt; Chat must independently fetch and inspect `jobs/receipts/<id>.json` and compare the SHA-256 with known bytes. Do not claim success merely from a queued task or stdout. Do not write any job until local initialization is user-confirmed, and never disclose GitHub credentials.
+Do not enqueue another task while the first remains eligible. When the user returns output, check whether `jobs/receipts/pilot-20261030-2209.json` exists in the **private** repo, inspect status/job SHA/output SHA, and compare against the SHA-256 of exact bytes `b"GPT Chat Local Bridge pilot v0\\n"`. Distinguish receipt existence from local stdout, and check that the local fixed file exists if needed. If the job expired or there is an error, inspect first and do not blindly retry: the worker's durable reservation and fixed file can block repeat execution, intentionally. If no execution occurred before expiry, a new ID and expiry may be needed after inspection. This is still a manual one-shot pilot, not autonomous background control. Update this file before concluding the next substantive project turn.
 
 ## New-chat recovery prompt
 
