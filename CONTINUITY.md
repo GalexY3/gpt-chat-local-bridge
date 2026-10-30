@@ -212,6 +212,16 @@ The user explicitly reaffirmed that **regular ChatGPT Chat must be the primary i
 
 **Next step:** Discuss whether the user means one setup/pairing forever or one bounded consent each session, and recommend a bounded session. Research only legitimate connector surfaces/eligibility, or explicit provider approval; do not treat alternative transports as a bypass for the rejected job. No local execution yet.
 
+## 2026-10-31 — Nuevas alternativas investigadas en internet
+
+El usuario exige ChatGPT Chat en Plus/Pro sin facturacion adicional por API y pide una comprobacion de alternativas. Se encontraron nuevas vias:
+- Documentacion oficial: ChatGPT Sites esta disponible para Plus/Pro y permite alojar herramientas MCP mediante complementos invocables desde Chat. Consultar https://help.openai.com/es-es/articles/20001547-hosting-a-plugin-with-chatgpt-sites y https://help.openai.com/es-es/articles/20001339-creating-and-using-chatgpt-sites . No se han comprobado en esta cuenta la escritura hacia Windows, permisos concretos ni los posibles costes de alojamiento; crear o editar Sites utiliza cuota Work/Codex.
+- Proyectos comunitarios: https://github.com/int04/ChatCmd (MCP local, permisos, extension Chromium), https://github.com/Dworrall21/chatgpt-bridge y https://github.com/Tzufucius/web-llm-bridge . No se ha auditado su seguridad ni demostrado que sirvan para este usuario.
+- Las condiciones de uso europeas restringen la extraccion automatizada de resultados de ChatGPT; no recomendar automatizacion no oficial de la pagina como ruta confirmada.
+- Se creo el informe docs/CHAT_BRIDGE_INTERNET_FINDINGS_2026-10-31.md en feat/v1-bounded-listener, commit 93f771c910595eea26874a1a6a1bae3b7865f02c.
+
+Conclusion revisada: no es correcto afirmar que ninguna alternativa existe. Sites con plugin MCP es el primer candidato oficial para una prueba inocua de compatibilidad y costes, tras autorizacion expresa. El bloqueo anterior de la cola GitHub no se ha resuelto. No se ha iniciado servicio local, enviado trabajo ni fusionado ramas.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
