@@ -98,6 +98,16 @@ py -3 -m unittest discover -s tests -v
 
 If there are local tracked changes, inspect before pulling. Expected test discovery is 55. **Do not claim 55 pass until seeing the actual returned output.** No GitHub control jobs, listener process or services were started; user approval for LIVE v1 execution has not been granted. Preserve that approval boundary. `main` still contains project continuity, not the v1 feature implementation.
 
+## Latest v1 Windows test acceptance (2026-10-30)
+
+**User-reported PowerShell result: 55 tests discovered, 55 PASS, 0 failed, 0 skipped; 0.182 s; final `OK`.** The user's checkout was clean before `git pull --ff-only`, which fast-forwarded `feat/v1-bounded-listener` from `5f03087` to `41932d1`. Both simulated filesystem safety tests, `test_symlinked_outputs_dir_refused` and `test_windows_junctioned_outputs_dir_refused`, now report `ok`. This validates their *mocked rejection paths*, not all real Windows reparse-point behavior. This is a user-supplied Windows test transcript, not execution by ChatGPT.
+
+**Verified GitHub state:** Feature branch `feat/v1-bounded-listener` HEAD `41932d16a249c01c247aa8b2fb3bb919352d2a08`; the private control repo is still private on `main`. No v1 listener started or live v1 job dispatched. The earlier manual v0 round trip remains complete. The implementation is not merged into public `main`, and no service/daemon or arbitrary command execution is enabled.
+
+**Authorization boundary:** The user explicitly authorized v1 *development*, but required separate approval before any live listener or new private job. The offline test gate is now satisfied. **Do not start a live listener or enqueue a new job without the user's new explicit authorization.**
+
+**Next action:** Ask the user to authorize one live, foreground, time-bounded v1 acceptance test with a single harmless fixed-file operation. After authorization, instruct the user to run `py -3 bridge_listener.py --listen --max-minutes 10 --poll-seconds 15` from their existing checkout, then wait for its exact `listener_ready` stdout before adding one fresh short-lived job to the PRIVATE queue. The listener ignores all jobs present at startup and exits after one completed operation or timeout; it does not install as a Windows service or run at login. Verify the receipt on GitHub, request a direct Windows file hash comparison, and update this file. If `listener_ready` has not been observed, do not publish a job. If more than ten minutes have elapsed, restart only with the user's approval and a fresh task, not a replay. No merge to `main` without authorization.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
