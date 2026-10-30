@@ -123,6 +123,12 @@ py -3 bridge_listener.py --listen --max-minutes 10 --poll-seconds 15
 
 User must report seeing the exact stdout `listener_ready` while the window remains running. **Do not create a job just because the command was recommended.** Only after the user confirms `listener_ready` and the session is still inside its time window should the assistant obtain the target-local current time, select a fresh short-lived `job_id`, and enqueue the strict v0 JSON job with `write_fixed_test_file`, `isolated-pilot`, empty parameters and an expiry within 15 minutes (preferably within the remaining listener window). After execution, independently inspect `jobs/receipts/<job_id>.json`, verify expected SHA-256 against the exact fixed bytes, and ask the user to check the physical per-job output. If the process has timed out, been stopped, or errored, do not enqueue; inspect and coordinate a fresh explicit start instead. The live test authorizes a single job only, not a permanent agent.
 
+## Latest v1 live-test attempt (2026-10-30)
+
+The user reported `listener_ready` in foreground PowerShell. ChatGPT attempted to enqueue one fixed-file task, `pilot-v1-20261030-2337`, via the private GitHub connector. The write was blocked by security controls. Follow-up GitHub reads of the pending job and receipt both returned 404. **No new v1 job or receipt was found; the live acceptance test is not complete.**
+
+The user was instructed to stop the listener via Ctrl+C or allow its ten-minute timeout. Do not circumvent the rejected write with another transport. Existing v0 manual success and v1 55/55 offline tests remain valid; no merge or service activation occurred.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
