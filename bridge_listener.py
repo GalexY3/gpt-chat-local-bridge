@@ -143,7 +143,7 @@ class GitHubQueue:
 
     def publish_receipt(self, job_id: str, receipt: dict[str, Any]) -> None:
         # The inherited v0 method uses PUT with no SHA: it refuses to overwrite.
-        GitHubCLI.publish_receipt(self, job_id, receipt)
+        GitHubCLI().publish_receipt(job_id, receipt)
 
 
 def _ensure_outputs_root(root: Path) -> Path:
