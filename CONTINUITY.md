@@ -129,6 +129,28 @@ The user reported `listener_ready` in foreground PowerShell. ChatGPT attempted t
 
 The user was instructed to stop the listener via Ctrl+C or allow its ten-minute timeout. Do not circumvent the rejected write with another transport. Existing v0 manual success and v1 55/55 offline tests remain valid; no merge or service activation occurred.
 
+## Follow-up engineering after stopped v1 listener (2026-10-30)
+
+**User confirmed the v1 listener is stopped** and instructed continued development. No further live dispatch was authorized; the rejected chat-side job creation was not retried through another transport. Read-only GitHub inspection confirmed the private `jobs/pending` directory still contains only `pilot-20261030-2209.json`, from the previously completed manual v0 pilot. The v1 live acceptance test remains **BLOCKED** at chat-side dispatch, not a proven Windows listener failure.
+
+**New feature-branch commits verified** on public `feat/v1-bounded-listener`:
+- `4866feb6ab9a01f72be0d75ebfff175cb4e44bb8`: added `tests/test_transport_offline.py` with **10 new offline test methods** mocking GitHub CLI GET and PUT calls, fixed endpoint usage, no-shell execution, error redaction, timeouts, malformed/oversized responses, path/SHA validation and receipt encoding. These tests were **written but not yet executed in the user's Windows or independently verified**. Prior 55/55 passing Windows suite remains valid. **Current source count: 65 test methods**.
+- `60dc5e7b978b094af372bdde22357f5a2e43846e`: added `docs/ADR-0002-DISPATCH-BOUNDARY.md` to distinguish a host security block from a Windows bug and forbid changing connectors, transports or credentials merely to bypass the rejected job.
+- `96bfebd3aca1b8c021f49018da69c7345d9f466d`: updated `docs/WORKER_V1.md` to reflect actual user-run Windows validation and the unsuccessful live trial.
+- `de1fb9aa976451d415f26bf5242b228b2e09a7c6`: added `docs/SECURITY_REVIEW_V1.md` with an evidence matrix, threat model, residual risks and prioritization.
+- Feature branch latest observed HEAD: **`de1fb9aa976451d415f26bf5242b228b2e09a7c6`**. Recheck before editing. No merge to `main`, no edits to the private control queue or scientific repositories, no service/GUI execution.
+
+**NEXT CONCRETE STEP:** Run the expanded offline suite only, from the already-existing `feat/v1-bounded-listener` checkout, in ordinary Windows PowerShell (no administrator rights):
+
+```powershell
+cd $HOME\gpt-chat-local-bridge
+git status --short
+git pull --ff-only
+py -3 -m unittest discover -s tests -v
+```
+
+Expected discovery: 65 test methods, **not a passing result until user supplies the real output**. Stop if local tracked changes exist. These tests mock `subprocess.run` and do not write to the control repository. The broader product blocker remains the ChatGPT-side connector security rejection; the internal cause cannot be verified. Do not restart the listener, reattempt the forbidden write or propose a covert alternative. Further live work requires a supported approved dispatch mechanism and separately scoped user authorization. Continue updating this public continuity document before each substantive project response.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
