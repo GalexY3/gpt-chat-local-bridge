@@ -77,6 +77,21 @@ class ProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(JobValidationError, "invalid_size"):
             parse_job(b"x" * 4097, now=NOW)
 
+    def test_rejects_duplicate_json_keys(self):
+        raw = encode(valid_job()).replace(b'"job_id":', b'"job_id":"other", "job_id":')
+        with self.assertRaisesRegex(JobValidationError, "invalid_json"):
+            parse_job(raw, now=NOW)
+
+    def test_rejects_duplicate_nested_parameter_keys(self):
+        raw = encode(valid_job()).replace(b'"parameters": {}', b'"parameters": {"a": 1, "a": 2}')
+        with self.assertRaisesRegex(JobValidationError, "invalid_json"):
+            parse_job(raw, now=NOW)
+
+    def test_rejects_nonfinite_json_number(self):
+        raw = encode(valid_job()).replace(b'"schema_version": 0', b'"schema_version": NaN')
+        with self.assertRaisesRegex(JobValidationError, "invalid_json"):
+            parse_job(raw, now=NOW)
+
     def test_rejects_non_utc_expiry(self):
         job = valid_job()
         job["expires_at"] = "2026-10-30T20:05:00+00:00"
