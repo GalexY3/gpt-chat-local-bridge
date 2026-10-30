@@ -53,6 +53,12 @@ No Windows service, startup task or background process is installed. `Ctrl+C` st
 - Publishing a GitHub receipt is not a substitute for local file verification. The final live acceptance check requires retrieving the receipt and checking the physical file's SHA-256 on Windows.
 - Multiple code paths have offline tests, but the current prototype is **not independently security audited** and should not be exposed to sensitive data or privileged tasks.
 
+## Windows adversarial-test coverage
+
+The first user-reported v1 suite discovered 54 tests: 53 passed and 1 was skipped because the local Windows account could not create a real symbolic link. This is not equivalent to 54 passes. The subsequent source revision replaced that privilege-dependent test with deterministic simulation of a symlink metadata response, and added an analogous simulated Windows junction check. **There are now 55 test methods in source; this revised suite has not yet been run on Windows.**
+
+The simulated tests exercise the worker's refusal path without requiring administrator or Developer Mode permissions. They do **not** independently validate real Windows filesystem reparse-point behavior under all circumstances. Any later genuine filesystem integration test must use a disposable workspace, be separately reviewed, and never require elevated privileges to pass the basic unit test suite.
+
 ## Review gates before claiming v1 complete
 
 - Full offline tests passed on Windows, with actual output and Python version recorded.
