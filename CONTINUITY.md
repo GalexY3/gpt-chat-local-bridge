@@ -174,6 +174,18 @@ A source-linked documentary note was created at `docs/TRANSPORT_SUPPORT_RESEARCH
 
 **Current decision:** Pause new mock-test development and live bridge operations until a supported authorized dispatch capability is identified. V0 manual E2E verification and v1 65/65 offline pass stand. The listener is stopped; v1 live E2E is not verified. No new control jobs, services, merges or AB project changes. Keep documenting exact verified facts and report blockers without promising future deployment.
 
+## Decision checkpoint: actionable options after transport block (2026-10-30)
+
+In response to the user's request for a decision rather than more tests, the assistant confirmed the v1 worker's local test milestone (65/65 Windows offline passes) and the **unresolved chat-side dispatch blocker**. The system does not currently meet the desired normal-ChatGPT-Chat-to-Windows automatic execution requirement. It would be inaccurate to call it a functioning automatic local bridge.
+
+Official OpenAI documentation reviewed in this exchange:
+- `https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt`: full custom MCP write/modify capability is currently limited to Business and Enterprise/Edu; Pro custom MCP servers have read/fetch permissions. Eligibility of this specific user account is not verified.
+- `https://help.openai.com/es-es/articles/20001275-chatgpt-work-and-codex`: Work and Codex, where plan/permissions allow, are separate supported execution experiences; Work Local and Codex Local can operate with local files/apps.
+- `https://help.openai.com/en/articles/20001280-using-cloud-browser-in-chatgpt`: Work Cloud browser runs on a separate cloud machine, not automatically the user's personal Windows.
+- `https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt`: standard GitHub connector's read-oriented documented behavior; historical successfully used GitHub tools in this conversation remain real but do not imply permission for the previously blocked job write.
+
+**Decision:** Stop requesting new Windows unit runs or restarting the listener solely to repeat the blocked chat-side dispatch. Preserve v1 as a bounded research prototype. For immediate practical local automation, discuss the officially supported Work Local / Codex Local pathways if the user decides to accept them; otherwise retain the validated manual v0 and request a supported, authorized write-capable connector path rather than bypassing the block. No new job, service, public main merge, or scientific repo changes are authorized by this decision.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
