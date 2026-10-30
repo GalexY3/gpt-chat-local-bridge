@@ -161,6 +161,19 @@ The assistant subsequently updated `docs/SECURITY_REVIEW_V1.md` on `feat/v1-boun
 
 **Next research/engineering decision:** Stop adding low-value mock tests until there is a clearly supported and authorized chat-side dispatch mechanism. Document any vendor-supported capabilities and permissions by authoritative sources; do not treat an alternate transport as a workaround for the blocked write. The existing offline worker is ready for code review and targeted reliability fixes. Do not ask the user to restart the listener or send another job without a new, supported path and explicit approval. Maintain `CONTINUITY.md` after each substantive turn.
 
+## Documented transport support research (2026-10-30)
+
+After the 65/65 user-reported Windows offline test success, the assistant consulted current **official OpenAI Help Center** documentation:
+- `https://help.openai.com/en/articles/11145903-connecting-github-to-chatgpt`: standard ChatGPT GitHub integration is documented as read-only for code reading and analysis, with writing/editing directed to Codex.
+- `https://help.openai.com/en/articles/12584461-developer-mode-and-full-mcp-connectors-in-chatgpt`: custom MCP app write/modify actions are documented under current plan/workspace limits, particularly Business/Enterprise/Edu full MCP beta; host may ask for approval or block risky actions.
+- `https://help.openai.com/en/articles/12584461-connecting-custom-mcp-servers-in-chatgpt`: managed custom MCP connections require workspace permissions; remote/supported secure tunnel connectivity is described.
+
+The documentation does **NOT** explain the internal reason for the specific blocked v1 private queue write, and is not proof of the user's individual plan eligibility or specific tool authorizations. Earlier successful GitHub writes via available connector tools, including the verified v0 job, remain factual and must not be erased or rewritten as impossible. Individual permission for each write is separate from general tool availability.
+
+A source-linked documentary note was created at `docs/TRANSPORT_SUPPORT_RESEARCH.md` on public development branch `feat/v1-bounded-listener`, commit `95568c73a891d6997144da9381a425943f80cac5`. This proposes **no live dispatch** or bypass: custom MCP write actions are only a possible future product architecture subject to eligibility, official authorization, hosting/security review and separate user consent. The existing block must not be evaded through alternative transports or disguised requests.
+
+**Current decision:** Pause new mock-test development and live bridge operations until a supported authorized dispatch capability is identified. V0 manual E2E verification and v1 65/65 offline pass stand. The listener is stopped; v1 live E2E is not verified. No new control jobs, services, merges or AB project changes. Keep documenting exact verified facts and report blockers without promising future deployment.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
