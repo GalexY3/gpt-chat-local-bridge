@@ -71,7 +71,7 @@ class ProtocolTests(unittest.TestCase):
 
     def test_rejects_invalid_utf8(self):
         with self.assertRaisesRegex(JobValidationError, "invalid_json"):
-            parse_job(b"\\xff", now=NOW)
+            parse_job(bytes([255]), now=NOW)
 
     def test_rejects_oversized_payload(self):
         with self.assertRaisesRegex(JobValidationError, "invalid_size"):
