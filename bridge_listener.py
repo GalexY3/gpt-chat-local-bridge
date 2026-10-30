@@ -216,6 +216,7 @@ def execute_fixed_job(
         "output_file": f"outputs/{job_id}/{FIXED_OUTPUT_NAME}",
         "output_sha256": hashlib.sha256(FIXED_OUTPUT_BYTES).hexdigest(),
         "job_sha256": reservation["job_sha256"],
+        "started_at": reservation["started_at"],
         "completed_at": utc_iso(utc_now()),
     }
     try:
