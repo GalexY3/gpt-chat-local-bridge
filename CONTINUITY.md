@@ -59,6 +59,28 @@ Both repositories have been accessible through the GitHub connection. The privat
 
 **Next action:** Review the proposed bounded-listener design in `docs/ADR-0001-BOUNDED_LISTENER.md` on feature branch, and—if the user wishes to continue—implement it on a feature branch, with offline unit tests and no live unattended execution before the user has reviewed the updated protocol and tests. Address the present v0 limitation that a second job cannot reuse the one existing fixed output. Update and run tests on Windows before any new private dispatch. Do not automatically merge to `main`. The user has not yet explicitly approved a continuously running service or generalized execution on their PC.
 
+## Development checkpoint: v1 bounded listener (2026-10-30)
+
+The user authorized **development and offline tests only** for v1, with no new live dispatch or service activation before a separate approval. Public branch: `feat/v1-bounded-listener`, last verified HEAD `5f03087b23f1104e6b746f615a460e7eea0cfa43`. The public `main` branch has not received the implementation.
+
+New source: `bridge_listener.py` provides an opt-in bounded foreground listener with a ten-minute maximum, startup queue baseline, private GitHub repository checks, one operation per session, per-job output directories, local lock, idempotent reservations, SHA-256 receipts and safe termination. Protocol parser additionally rejects duplicate JSON keys and nonfinite JSON. Documentation: `docs/WORKER_V1.md`, updated `docs/ADR-0001-BOUNDED_LISTENER.md`.
+
+**54 test methods are written**: 14 protocol, 9 previous worker, 31 v1 listener/adversarial cases. **They have NOT been run on Windows or independently validated in this turn.** No v1 listener has been launched. No new private job, system service, background process, or GUI automation has been activated. Prior manual v0 pilot remains successful and verified.
+
+The single-computer pilot is not a hardened sandbox: locking is local rather than distributed, filesystem checks have possible local same-user race conditions, and queue write authorization does not prove which chat initiated an operation.
+
+**Next local test, before any live queue use:**
+
+```powershell
+cd $HOME\gpt-chat-local-bridge
+git status --short
+git fetch origin
+git switch --track origin/feat/v1-bounded-listener
+py -3 -m unittest discover -s tests -v
+```
+
+Expected test discovery is 54, not a claimed passing result. If the branch already exists locally, use a normal switch and fast-forward pull. Review results, fix errors if any, and seek separate approval before a live v1 session. Do not merge to `main` automatically.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
