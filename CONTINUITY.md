@@ -41,6 +41,10 @@ Both repositories have been accessible through the GitHub connection. The privat
 - No auto-merges to main and no license chosen yet.
 - A submitted job is not proof of execution. Require an observed local action plus a return receipt and hash.
 
+## Latest conversational checkpoint (2026-10-30)
+
+User pasted a PowerShell log showing `git pull` to feature HEAD `b144727` and the same 20/20 offline tests passing in 0.052 s. **No invocation or output of `py -3 bridge_worker.py --init` appears in this log.** Therefore local workspace initialization remains UNVERIFIED and no GitHub job has been queued or executed. The next reply should ask only for `git pull --ff-only` to retrieve `.gitignore` at later commit `bbc9ca5`, then `py -3 bridge_worker.py --init` (in the existing project directory). Treat any failure non-destructively and inspect before proceeding. Do not claim a new test run beyond user-shared output.
+
 ## Next action
 
 The user already cloned the public repo in their Windows home folder and is on `feat/pilot-schema-v0`. **Do not clone again.** As of this checkpoint **20/20 offline tests have been user-reported as passing.** Now update the feature branch to collect the harmless Python cache ignore and **explicitly initialize the isolated workspace**:
