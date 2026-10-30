@@ -1,6 +1,6 @@
 # ADR-0001 — Time-bounded polling instead of an unattended remote shell
 
-**Status:** Proposed. **Scope:** post-pilot v1 design. Not implemented, authorized, deployed, or executed.
+**Status:** Authorized for implementation on a feature branch on 2026-10-30. **Live execution is NOT authorized.** V1 implementation and offline adversarial tests are written on `feat/v1-bounded-listener`; they have not yet been run on the user's Windows. No service, queue job, or live listener has been activated.
 
 ## Context
 
