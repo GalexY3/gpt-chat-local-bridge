@@ -21,7 +21,7 @@ Both repositories have been accessible through the GitHub connection. The privat
 - Permanent restart mechanism established on public main (2026-10-30): `CONTINUITY.md`, `AGENTS.md`, `START_HERE.md`, plus a README link. `AGENTS.md` documents the convention that every future substantive project exchange should update this canonical file after verifying the latest GitHub SHA. Known commits: continuity creation `4eb47b821c18ca7c9a7a882382cf7a6aa9fa65ea`; AGENTS `549450077056e44159db2f00443758fc228b2709`; START_HERE `fb52c1c500019122d4425a70db8c7aff3e904fbe`; README link `c9a0acafaac688e0322816407672db916bb89c39`.
 - Public feature branch feat/pilot-schema-v0 includes bridge_protocol.py, tests/test_bridge_protocol.py and docs/WINDOWS_PREREQUISITES.md. Feature branch HEAD observed 2026-10-30 after cache ignore addition: bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34. Verify live HEAD before editing.
 
-**Windows testing observed through user-provided PowerShell transcripts:** initial 11 protocol tests passed (11/11, 0.004 s); subsequently the user pulled the one-shot worker and reports **20/20 tests PASS, 0.052 s** with Python 3.14.3. `git pull --ff-only` fast-forwarded the feature branch from d501807 to b144727. Their `git status --short` showed only untracked Python cache directories (`__pycache__/`, `tests/__pycache__/`). This is a **user-reported Windows execution**, not code remotely executed by this assistant. After that report, `.gitignore` was added on the feature branch to ignore those caches, commit bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34. **No worker workspace initialization, no private queue dispatch, no remote receipt and no Chat → PC → Chat end-to-end test has occurred.**
+**Windows testing observed through user-provided PowerShell transcripts:** initial 11 protocol tests passed (11/11, 0.004 s); subsequently the user pulled the one-shot worker and reports **20/20 tests PASS, 0.052 s** with Python 3.14.3. `git pull --ff-only` fast-forwarded the feature branch from d501807 to b144727. Their `git status --short` showed only untracked Python cache directories (`__pycache__/`, `tests/__pycache__/`). This is a **user-reported Windows execution**, not code remotely executed by this assistant. After that report, `.gitignore` was added on the feature branch to ignore those caches, commit bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34. **This historical status was superseded by the verified first pilot execution recorded below.**
 
 ## User-reported Windows diagnostics
 
@@ -41,21 +41,28 @@ Both repositories have been accessible through the GitHub connection. The privat
 - No auto-merges to main and no license chosen yet.
 - A submitted job is not proof of execution. Require an observed local action plus a return receipt and hash.
 
-## Latest conversational checkpoint (2026-10-30, Europe/Madrid)
+## Latest verified checkpoint (2026-10-30, Europe/Madrid)
 
-**Local initialization is user-reported complete.** The user's latest PowerShell transcript shows `git pull --ff-only` fast-forward to feature commit `bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34` (adds Python-cache `.gitignore`), followed by `py -3 bridge_worker.py --init` with exact stdout `pilot_workspace_initialized`. Earlier 20/20 offline tests passed, 0.052 s. These are user-shared PowerShell outputs, not local execution by ChatGPT.
+**FIRST REAL END-TO-END PILOT SUCCEEDED** (with the limitation that the local file has not yet been independently read back from Windows).
 
-**First real remote job QUEUED (not executed or completed).** Verified via connected GitHub read-back in the PRIVATE control repo: `jobs/pending/pilot-20261030-2209.json`, commit `80e821c1e27d629f66a38eac952f60e89f4209e5`, file SHA `66b2500fa006dc858c08e58343f0213dabe0273e`. Fields: `schema_version=0`, `job_id=pilot-20261030-2209`, `operation=write_fixed_test_file`, `workspace_profile=isolated-pilot`, `parameters={}`, `expires_at=2026-10-30T21:22:00Z` (22:22 Europe/Madrid). Job was created only after user confirmed local initialization. **No Windows execution or receipt has yet been observed.**
+1. User-provided PowerShell confirms the checkout was fast-forwarded to feature commit `bbc9ca5fb1fee0271d1f2796afd8f6dd4831df34`, 20/20 unit tests passed in 0.052s, and `py -3 bridge_worker.py --init` printed `pilot_workspace_initialized`.
+2. ChatGPT's GitHub connector created a task in the **private** control repo: `jobs/pending/pilot-20261030-2209.json`, commit `80e821c1e27d629f66a38eac952f60e89f4209e5`; task expiry `2026-10-30T21:22:00Z` and only permitted operation `write_fixed_test_file`.
+3. User-provided PowerShell confirms explicit execution `py -3 bridge_worker.py --run-id pilot-20261030-2209` and output `{"job_id":"pilot-20261030-2209","output_sha256":"b0cba8c8a2710c8a32599b3088a34260493eb773d7ccc4cb0e87c5f9f7f6ac73","receipt_uploaded":true}`.
+4. ChatGPT **independently fetched** `jobs/receipts/pilot-20261030-2209.json` from the private control repo, blob SHA `8acc7e9e44baa0bef35bd75db23bbdfe3c2c8e89`. It contains `status=succeeded`, `completed_at=2026-10-30T21:09:39Z`, `output_file=chat_local_bridge_pilot.txt`, `output_sha256=b0cba8c8a2710c8a32599b3088a34260493eb773d7ccc4cb0e87c5f9f7f6ac73`, `job_sha256=f9ac0450236464140458ae093d1976a6055d297f1de782a9accaf6ca576b5c11`.
+5. ChatGPT independently computed SHA-256 from the *exact submitted UTF-8 job JSON bytes* and from `b"GPT Chat Local Bridge pilot v0\n"`; **both match the corresponding hashes in the receipt**. The receipt completion time precedes expiry. The physical local file's hash has not yet been separately read directly from Windows; the file-write claim is supported by user stdout and the worker-generated remote receipt. Do not describe that as a fully independent forensic audit.
 
-## Next action
+**Capability achieved:** Manual, single-shot ChatGPT Chat → GitHub private job → Windows worker → private GitHub receipt → ChatGPT Chat. The system does **not** yet run continuously, poll autonomously, execute arbitrary code, operate Windows GUI, or support general scientific projects.
 
-The user was instructed to run the following in their already-initialized checkout **before 2026-10-30 22:22 Europe/Madrid**:
+**Next action: independently check the physical file from the user's ordinary PowerShell** (not admin):
 
 ```powershell
-py -3 bridge_worker.py --run-id pilot-20261030-2209
+Test-Path (Join-Path $HOME "gpt-chat-local-bridge-pilot\chat_local_bridge_pilot.txt")
+Get-FileHash (Join-Path $HOME "gpt-chat-local-bridge-pilot\chat_local_bridge_pilot.txt") -Algorithm SHA256 | Select-Object Hash
 ```
 
-Do not enqueue another task while the first remains eligible. When the user returns output, check whether `jobs/receipts/pilot-20261030-2209.json` exists in the **private** repo, inspect status/job SHA/output SHA, and compare against the SHA-256 of exact bytes `b"GPT Chat Local Bridge pilot v0\\n"`. Distinguish receipt existence from local stdout, and check that the local fixed file exists if needed. If the job expired or there is an error, inspect first and do not blindly retry: the worker's durable reservation and fixed file can block repeat execution, intentionally. If no execution occurred before expiry, a new ID and expiry may be needed after inspection. This is still a manual one-shot pilot, not autonomous background control. Update this file before concluding the next substantive project turn.
+Expected path check: `True`; expected hash `B0CBA8C8A2710C8A32599B3088A34260493EB773D7CCC4CB0E87C5F9F7F6AC73`. Do not re-run the same job; the worker deliberately prevents duplicates.
+
+After this check: decide the next narrowly scoped engineering improvement, beginning with **worker lifecycle / queue polling and security hardening**, offline tests and review before enabling any background execution. Avoid a generic remote shell, GUI automation, or open-ended code execution until separate permission gates and tests exist. Keep the public feature branch separate from `main` until reviewed and explicitly authorized.
 
 ## New-chat recovery prompt
 
