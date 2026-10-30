@@ -81,6 +81,23 @@ py -3 -m unittest discover -s tests -v
 
 Expected test discovery is 54, not a claimed passing result. If the branch already exists locally, use a normal switch and fast-forward pull. Review results, fix errors if any, and seek separate approval before a live v1 session. Do not merge to `main` automatically.
 
+## Latest Windows v1 test result and portability repair (2026-10-30)
+
+The user provided a new PowerShell transcript (also attached as `Texto pegado.txt`) showing their clean checkout, successful `git fetch origin`, switch to `feat/v1-bounded-listener`, and execution of `py -3 -m unittest discover -s tests -v` on Windows/Python 3.14.3. **Exactly 54 tests discovered, 53 passed, 1 skipped, 0 failed; duration 0.141s, output `OK (skipped=1)`.** The skipped case was `test_symlinked_outputs_dir_refused`, because Windows did not allow real symlink creation in this test environment. Do not report this as 54/54 passed.
+
+In response, the assistant amended the test **only on the v1 feature branch**: the symlink check now uses deterministic simulated `Path.is_symlink` OS metadata instead of requiring privileged symlink creation; a second test similarly exercises `Path.is_junction` rejection without requiring `mklink` or elevation. `tests/test_bridge_listener.py` changed in commit `ff1d5f27c25578e5c430a55c6a21fd8127ab8d4d`. `docs/WORKER_V1.md` was updated to distinguish mocked checks from actual Windows filesystem integration tests, commit `41932d16a249c01c247aa8b2fb3bb919352d2a08`. **Revised source defines 55 tests; those 55 have NOT yet been run on Windows or otherwise independently executed.** The use of `unittest.mock.patch.object(Path, "is_symlink"/"is_junction", autospec=True)` was smoke-checked with Python 3.13 in a separate isolated environment, not a full project-suite run.
+
+**Next user step:** Their local working branch is already `feat/v1-bounded-listener`. From regular PowerShell, run:
+
+```powershell
+cd $HOME\gpt-chat-local-bridge
+git status --short
+git pull --ff-only
+py -3 -m unittest discover -s tests -v
+```
+
+If there are local tracked changes, inspect before pulling. Expected test discovery is 55. **Do not claim 55 pass until seeing the actual returned output.** No GitHub control jobs, listener process or services were started; user approval for LIVE v1 execution has not been granted. Preserve that approval boundary. `main` still contains project continuity, not the v1 feature implementation.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
