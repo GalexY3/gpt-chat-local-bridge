@@ -224,15 +224,32 @@ class ListenerTests(unittest.TestCase):
         self.assertFalse((self.root / ".bridge-state" / "new-001.json").exists())
 
     def test_symlinked_outputs_dir_refused(self):
-        outside = Path(self.tmp.name) / "outside"
-        outside.mkdir()
-        try:
-            (self.root / "outputs").symlink_to(outside, target_is_directory=True)
-        except (OSError, NotImplementedError):
-            self.skipTest("symlink creation not supported on this runner")
-        with self.assertRaisesRegex(WorkerError, "output_root_invalid"):
-            execute_fixed_job(self.root, "new-001", payload(), FakeQueue(), now=NOW)
-        self.assertFalse((outside / "new-001").exists())
+        # Windows can require elevated privileges to create real symlinks.
+        # Simulate the OS metadata response instead of skipping this test.
+        outputs = self.root / "outputs"
+        outputs.mkdir()
+        with patch.object(
+            Path, "is_symlink", autospec=True,
+            side_effect=lambda candidate: candidate == outputs,
+        ):
+            with self.assertRaisesRegex(WorkerError, "output_root_invalid"):
+                execute_fixed_job(self.root, "new-001", payload(), FakeQueue(), now=NOW)
+        self.assertFalse((outputs / "new-001").exists())
+        self.assertFalse((self.root / ".bridge-state" / "new-001.json").exists())
+
+    def test_windows_junctioned_outputs_dir_refused(self):
+        # Explicitly exercise Path.is_junction(), available on Python >=3.12,
+        # without requiring mklink /J or any elevated Windows privileges.
+        outputs = self.root / "outputs"
+        outputs.mkdir()
+        with patch.object(
+            Path, "is_junction", autospec=True,
+            side_effect=lambda candidate: candidate == outputs,
+        ):
+            with self.assertRaisesRegex(WorkerError, "output_root_invalid"):
+                execute_fixed_job(self.root, "new-001", payload(), FakeQueue(), now=NOW)
+        self.assertFalse((outputs / "new-001").exists())
+        self.assertFalse((self.root / ".bridge-state" / "new-001.json").exists())
 
     def test_lease_lock_stale_crash_requires_manual_inspection(self):
         (self.root / ".bridge-state" / "listener.lock").write_text("stale")
