@@ -1,6 +1,6 @@
 # Windows worker v1 — bounded foreground listener (development only)
 
-**Status (2026-10-30):** The user ran 55/55 original v1 offline tests successfully on Windows. A live, foreground, user-authorized listener was started and reported `listener_ready`; the subsequent attempted chat-side GitHub job creation was blocked by connection security controls, and no new job or receipt was observed. The user confirmed stopping the listener. Therefore the **v1 live end-to-end acceptance test is incomplete**. Ten additional mock transport tests are drafted but have not yet been run.
+**Status (2026-10-30):** The user ran 55/55 original v1 offline tests successfully on Windows. A live, foreground, user-authorized listener was started and reported `listener_ready`; the subsequent attempted chat-side GitHub job creation was blocked by connection security controls, and no new job or receipt was observed. The user confirmed stopping the listener. Therefore the **v1 live end-to-end acceptance test is incomplete**. Ten additional mock transport tests have now passed on Windows as part of the **65/65** complete offline suite (0.147 seconds, no failures/skips). They do **not** resolve the blocked ChatGPT-side dispatch.
 
 ## Version separation
 
@@ -54,7 +54,7 @@ No Windows service, startup task or background process is installed. `Ctrl+C` st
 
 ## Windows adversarial-test coverage
 
-The first user-reported v1 suite discovered 54 tests: 53 passed and 1 was skipped because the local Windows account could not create a real symbolic link. This is not equivalent to 54 passes. The subsequent source revision replaced that privilege-dependent test with deterministic simulation of a symlink metadata response, and added an analogous simulated Windows junction check. The 55-test suite subsequently ran on Windows with **55 passes, 0 skips, 0 failures**. Ten separate mock GitHub CLI transport test methods have since been added, bringing the source total to **65**, not yet rerun on Windows.
+The first user-reported v1 suite discovered 54 tests: 53 passed and 1 was skipped because the local Windows account could not create a real symbolic link. This is not equivalent to 54 passes. The subsequent source revision replaced that privilege-dependent test with deterministic simulation of a symlink metadata response, and added an analogous simulated Windows junction check. The original 55-test suite ran on Windows with **55 passes, 0 skips, 0 failures**. Ten separate GitHub CLI transport tests were subsequently added, and the user reran the **entire 65-test suite** on Windows: **65 passes, 0 skips, 0 failures**, completed in 0.147 seconds. These transport tests mock the CLI rather than sending live GitHub requests.
 
 The simulated tests exercise the worker's refusal path without requiring administrator or Developer Mode permissions. They do **not** independently validate real Windows filesystem reparse-point behavior under all circumstances. Any later genuine filesystem integration test must use a disposable workspace, be separately reviewed, and never require elevated privileges to pass the basic unit test suite.
 
