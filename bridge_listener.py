@@ -251,6 +251,7 @@ def listen(
     clock: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
     utc: Callable[[], datetime] = utc_now,
+    on_ready: Callable[[], None] | None = None,
 ) -> dict[str, Any]:
     """One new, permitted job per bounded foreground session; returns a safe status.
 
@@ -270,6 +271,8 @@ def listen(
         baseline = set(transport.list_pending())
         # Fail closed if receipt directory is missing or unreadable.
         transport.list_receipts()
+        if on_ready is not None:
+            on_ready()
         failures = 0
 
         while clock() < end:
@@ -326,7 +329,8 @@ def main() -> int:
     args = parser.parse_args()
     try:
         result = listen(workspace_path(), GitHubQueue(),
-                        max_minutes=args.max_minutes, poll_seconds=args.poll_seconds)
+                        max_minutes=args.max_minutes, poll_seconds=args.poll_seconds,
+                        on_ready=lambda: print("listener_ready", flush=True))
         print(json.dumps(result, sort_keys=True))
         return 0
     except KeyboardInterrupt:
