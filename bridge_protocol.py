@@ -35,7 +35,22 @@ def parse_job(raw: bytes, *, now: datetime | None = None) -> dict[str, Any]:
     if not isinstance(raw, bytes) or len(raw) > MAX_JOB_BYTES:
         raise JobValidationError("invalid_size")
     try:
-        data = json.loads(raw.decode("utf-8"))
+        def reject_duplicate_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+            result: dict[str, Any] = {}
+            for key, value in pairs:
+                if key in result:
+                    raise ValueError("duplicate_json_key")
+                result[key] = value
+            return result
+
+        def reject_nonfinite(value: str) -> None:
+            raise ValueError("nonfinite_json_number")
+
+        data = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=reject_duplicate_keys,
+            parse_constant=reject_nonfinite,
+        )
     except (ValueError, UnicodeDecodeError) as exc:
         raise JobValidationError("invalid_json") from exc
 
