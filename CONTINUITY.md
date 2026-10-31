@@ -290,6 +290,16 @@ Current official Chat On Steroids upstream release was freshly checked through G
 
 Important: prior chat-side private GitHub queue write refusal persists and must not be replayed via another transport. CoS requires its own separately authorized plugin capabilities; a fresh custom MCP form does not override the prior denial. Do not claim successful live desktop control until an actual read-only then harmless authorized test passes.
 
+## 2026-10-31 — Chat On Steroids installer digest confirmed
+
+The user downloaded `Chat-On-Steroids-Setup-x64.exe` and ran on their own Windows PowerShell:
+`(Get-FileHash "$HOME\\Downloads\\Chat-On-Steroids-Setup-x64.exe" -Algorithm SHA256).Hash`
+User-reported local SHA-256: **`23C12010EB6638C2FDC5CA8F1351A9EB917D04AB94FE168BC6D199AC0BEA3CE6`**.
+
+The assistant independently fetched the official GitHub REST `/repos/totec448-spec/chat-on-steroids/releases/tags/v2.1.48` JSON and observed asset `Chat-On-Steroids-Setup-x64.exe`, size `177547665` bytes, `digest: sha256:23c12010eb6638c2fdc5ca8f1351a9eb917d04ab94fe168bc6d199ac0bea3ce6`. **Digest matches exactly.** This is a published-asset integrity check, NOT antivirus/security certification, independent binary review or proof the app has been installed.
+
+Next steps should be **controlled installation** only if the user understands unsigned-beta risk: ordinary non-admin, current-user installation, no autostart, no MCP/tunnel, no ChatGPT connection yet. On first launch, immediately disable all default enabled high-risk permissions (terminal/commands, desktop/window/screen/input, browser control, external plugins and multi-agent), turn read-only ON, select a disposable non-sensitive test root, and visually inspect Settings before any connector. Start Core read-only after a separate informed decision. User's hard requirements: personal ChatGPT **Plus Chat only**, absolutely no Work/Codex quota and no paid inference API. No Site/Work/Codex process should be called; helper ChatGPT conversations still consume Plus Chat quota. User has already shown availability of the custom MCP connection form, but has not created a plugin yet. Do not assume any local software installed or tool execution without a user report.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
