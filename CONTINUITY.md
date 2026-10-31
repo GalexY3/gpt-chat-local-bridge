@@ -346,6 +346,26 @@ No terminal commands, edits, Windows desktop actions or external inference API c
 
 **Next suggested controlled increment**, only with user approval: use an intentionally disposable file in `CoS-Prueba`; enable `Modificar archivos` and disable `Solo lectura` only for that folder, while keeping `Ejecutar programas`, desktop/browser control and subagents OFF, then refresh/reopen the MCP connector if needed and test a single benign write/read/hash. Do not infer all-PC autonomy from this read test, do not restart the old GitHub queue dispatch, and retain the hard user budget of personal Plus **Chat only** (no Work/Codex or paid inference API). Avoid printing credentials, local full home paths, or other private data in public continuity.
 
+## 2026-10-31 — FIRST SUCCESSFUL CHAT→WINDOWS MCP WRITE AND READBACK
+
+The user explicitly consented ("okey, comprobemos") to the previously discussed **harmless file-write test** using the connected `Chat On Steroids Core - Prueba` tool, with ordinary Plus Chat (no Work/Codex, no external inference API). The assistant **actually executed** these native plugin calls in this Chat turn:
+
+1. `read({"paths":["/cos-prueba"]})` returned `--- /cos-prueba — empty folder ---`.
+2. `apply_patch` with `*** Add File: /cos-prueba/prueba-chat-mcp.txt` and four non-sensitive text lines returned **`Exit code: 0`** / **`Success. Updated the following files: A /cos-prueba/prueba-chat-mcp.txt`**.
+3. `read({"paths":["/cos-prueba/prueba-chat-mcp.txt"]})` returned the exact four lines, 160 bytes, with a modification timestamp, confirming independent readback of a genuine local Windows file through MCP:
+   ```
+   Prueba de escritura de ChatGPT Chat a Chat On Steroids.
+   Carpeta de prueba: /cos-prueba
+   Fecha: 2026-10-31
+   Este archivo no contiene datos personales ni secretos.
+   ```
+
+**This is the first verified read+write E2E operation from a normal ChatGPT Chat conversation to a Windows file via Chat On Steroids.** It is not a simulation or GitHub-queue job. The assistant used **neither Work nor Codex actions nor an externally billed inference API tool**, but cannot independently audit the user's ChatGPT Work/Codex usage counters. Only a disposable file under the approved test root was modified; no shell, desktop control, subagent, OS service, paid API or other local file changes were initiated by the assistant.
+
+**IMPORTANT PERMISSION CAVEAT:** Current connector discovery now advertised additional `save_image`, `apply_patch`, `exec_command`, `write_stdin`, and `agents` tool declarations (compared with the previous four-tool read-only observation), but mere advertisement does not prove that local shell/desktop/subagent permissions are actually enabled. The successful patch **does** demonstrate file-write authorization was available for this test. Before expanding scope, ask the user to inspect `CoS → Espacio de trabajo` and confirm `Ejecutar programas`, `Control del navegador y del escritorio`, and `Subagentes` are OFF; allow file edits only in the disposable root, or return to Solo lectura if finished.
+
+Next work: verify user's local file visually or hash in own Windows if desired; document that the GitHub v1 queue's prior host block remains a distinct issue, and prefer the now verified CoS transport without claiming zero quota by fiat. User expects an autonomous PC agent eventually with one-time controlled session permissions; do not grant unrestricted PC control or assume background autonomy from a single file write. Public continuity records only non-sensitive virtual paths and result text.
+
 ## New-chat recovery prompt
 
 Continue the GPT Chat Local Bridge pilot from the current GitHub state. Open the public repository GalexY3/gpt-chat-local-bridge and read CONTINUITY.md, docs/PILOT_PROTOCOL.md, and current feature-branch code. Check both repository branch HEADs and access to the private repository GalexY3/gpt-chat-local-bridge-control. Follow the next action documented here. Report actual changes and tests separately from plans, preserve the safety boundaries and do not claim Windows execution without evidence. Keep this continuity document current after each significant project exchange so the next chat can resume without prior conversation history.
